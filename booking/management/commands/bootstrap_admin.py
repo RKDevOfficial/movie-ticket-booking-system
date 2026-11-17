@@ -32,9 +32,15 @@ class Command(BaseCommand):
                 if user:
                     user.is_staff = True
                     user.is_superuser = True
+                    user.is_active = True
                     user.set_password(password)
                     user.save(
-                        update_fields=('is_staff', 'is_superuser', 'password')
+                        update_fields=(
+                            'is_staff',
+                            'is_superuser',
+                            'is_active',
+                            'password',
+                        )
                     )
                 else:
                     user_model.objects.create_superuser(

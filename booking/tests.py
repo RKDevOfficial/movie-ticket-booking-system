@@ -1,7 +1,10 @@
+import os
 from io import BytesIO
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.test import override_settings
@@ -19,6 +22,25 @@ from booking.models import (
     ShowTime,
     Theater,
 )
+
+
+class BootstrapAdminCommandTests(TestCase):
+    def test_creates_admin_superuser_only_when_password_is_configured(self):
+        with patch.dict(os.environ, {'INITIAL_SUPERUSER_PASSWORD': 'test-only-password'}):
+            call_command('bootstrap_admin')
+            call_command('bootstrap_admin')
+
+        admin = get_user_model().objects.get(username='admin')
+        self.assertTrue(admin.is_superuser)
+        self.assertTrue(admin.is_staff)
+        self.assertTrue(admin.check_password('test-only-password'))
+
+    def test_skips_when_password_is_not_configured(self):
+        with patch.dict(os.environ):
+            os.environ.pop('INITIAL_SUPERUSER_PASSWORD', None)
+            call_command('bootstrap_admin')
+
+        self.assertFalse(get_user_model().objects.filter(username='admin').exists())
 
 
 class AuthenticationFlowTests(TestCase):

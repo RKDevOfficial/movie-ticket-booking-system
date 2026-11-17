@@ -35,4 +35,4 @@ python manage.py test
 
 Create a new Blueprint from this repository and use the included `render.yaml`. Render provisions the web service and PostgreSQL database. The service runs database migrations on startup and collects static assets during the build.
 
-Set a strong, unique superuser password in the deployed database; the local SQLite superuser is not included in the repository. Uploaded media is stored on the service filesystem and may not persist across redeploys, so configure durable media storage before relying on uploads in production.
+The local SQLite superuser is not included in the repository. To create a deployed superuser, temporarily set `INITIAL_SUPERUSER_PASSWORD` in the Render web service environment and deploy. Startup creates the `admin` superuser only if that username does not already exist. Remove the environment variable after the successful deploy. Use a strong, unique password for a public service; uploaded media is stored on the service filesystem and may not persist across redeploys, so configure durable media storage before relying on uploads in production.

@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="workflow-page seat-list-page">
+  <header class="workflow-heading">
+    <div>
+      <p class="dashboard-kicker">CINEMA OPERATIONS</p>
+      <h2>Seat management</h2>
+      <p class="workflow-subtitle">Manage seats and their cinema hall assignments.</p>
+    </div>
+    <a class="workflow-button" href="{% url 'list_seat' %}?seat_form=add&amp;q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}">
+      <span class="material-symbols-rounded" aria-hidden="true">add</span>
+      Add seat
+    </a>
+  </header>
+
+  <div class="booking-summary-grid seat-summary-grid">
+    <article class="booking-summary-card">
+      <span class="summary-symbol blue-symbol material-symbols-rounded" aria-hidden="true">event_seat</span>
+      <span class="summary-label">Seats in system</span>
+      <strong>{{ seat_count }}</strong>
+    </article>
+    <article class="booking-summary-card">
+      <span class="summary-symbol orange-symbol material-symbols-rounded" aria-hidden="true">meeting_room</span>
+      <span class="summary-label">Cinema halls</span>
+      <strong>{{ hall_count }}</strong>
+    </article>
+  </div>
+
+  <div class="workflow-card table-card">
+    <form class="booking-search" method="get" action="{% url 'list_seat' %}" role="search">
+      <label class="booking-search-control">
+        <span class="material-symbols-rounded" aria-hidden="true">search</span>
+        <span class="visually-hidden">Search seats</span>
+        <input type="search" name="q" value="{{ search_query }}" placeholder="Search seat number, hall, theater, or seat ID...">
+      </label>
+      <button class="booking-search-button" type="submit">Search</button>
+      <label class="booking-limit-control">Rows
+        <select name="limit" aria-label="Rows per page" onchange="this.form.submit()">
+          <option value="10" {% if page_limit == '10' %}selected{% endif %}>10</option>
+          <option value="25" {% if page_limit == '25' %}selected{% endif %}>25</option>
+          <option value="50" {% if page_limit == '50' %}selected{% endif %}>50</option>
+        </select>
+      </label>
+      {% if search_query %}<a class="booking-search-clear" href="{% url 'list_seat' %}?limit={{ page_limit }}">Clear</a>{% endif %}
+    </form>
+    <div class="workflow-table-wrap">
+      <table class="workflow-table seat-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Seat</th>
+            <th>Cinema hall</th>
+            <th>Theater</th>
+            <th>Hall capacity</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in seat %}
+            <tr>
+              <td><span class="booking-reference">#{{ item.id }}</span></td>
+              <td>
+                <div class="table-primary-cell">
+                  <span class="seat-table-icon material-symbols-rounded" aria-hidden="true">event_seat</span>
+                  <span><strong>{{ item.seat_number }}</strong><small>Seat number</small></span>
+                </div>
+              </td>
+              <td><span class="seat-hall-name">{{ item.hall.name }}</span></td>
+              <td>{{ item.hall.theater.name }}</td>
+              <td><span class="seat-capacity-chip">{{ item.hall.capacity }} seats</span></td>
+              <td class="workflow-row-actions">
+                <a class="row-action" href="{% url 'list_seat' %}?seat_form=edit&amp;seat_id={{ item.pk }}&amp;q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}" aria-label="Edit seat {{ item.seat_number }}" title="Edit seat">
+                  <span class="material-symbols-rounded" aria-hidden="true">edit</span>
+                </a>
+                <a class="row-action danger-link" href="{% url 'delete_seat' item.pk %}" aria-label="Delete seat {{ item.seat_number }}" title="Delete seat">
+                  <span class="material-symbols-rounded" aria-hidden="true">delete</span>
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td class="workflow-empty" colspan="6">
+              <span class="material-symbols-rounded" aria-hidden="true">event_seat</span>
+              <strong>{% if search_query %}No matching seats{% else %}No seats yet{% endif %}</strong>
+              <span>{% if search_query %}Try a different seat number, hall, or theater.{% else %}Add seats to your cinema halls to get started.{% endif %}</span>
+            </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <footer class="booking-pagination">
+      <p>Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} seats</p>
+      {% if page_obj.paginator.count %}
+        <nav class="booking-pagination-controls" aria-label="Seat list pages">
+          {% if page_obj.has_previous %}
+            <a class="booking-page-arrow" href="?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.previous_page_number }}" aria-label="Previous page" title="Previous page">&lt;</a>
+          {% else %}
+            <span class="booking-page-arrow is-disabled" aria-disabled="true" aria-label="No previous page">&lt;</span>
+          {% endif %}
+          <span class="booking-page-count">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+          {% if page_obj.has_next %}
+            <a class="booking-page-arrow" href="?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.next_page_number }}" aria-label="Next page" title="Next page">&gt;</a>
+          {% else %}
+            <span class="booking-page-arrow is-disabled" aria-disabled="true" aria-label="No next page">&gt;</span>
+          {% endif %}
+        </nav>
+      {% endif %}
+    </footer>
+  </div>
+</section>
+{% if seat_form %}
+  <div class="booking-modal-layer">
+    <a class="booking-modal-backdrop" href="{% url 'list_seat' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}" aria-label="Close seat form"></a>
+    <section class="booking-modal" role="dialog" aria-modal="true" aria-labelledby="seat-modal-title">
+      <header class="booking-modal-header">
+        <div>
+          <p class="dashboard-kicker">CINEMA OPERATIONS</p>
+          <h2 id="seat-modal-title">{{ seat_form_title }}</h2>
+          <p class="workflow-subtitle">Assign a seat number to a cinema hall.</p>
+        </div>
+        <a class="booking-modal-close" href="{% url 'list_seat' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}" aria-label="Close form">
+          <span class="material-symbols-rounded" aria-hidden="true">close</span>
+        </a>
+      </header>
+      {% include 'seat/_seat_form_fields.html' %}
+    </section>
+  </div>
+{% endif %}
+{% endblock %}

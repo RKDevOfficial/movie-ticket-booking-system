@@ -1,0 +1,25 @@
+<form class="workflow-form booking-modal-form" method="post">
+  {% csrf_token %}
+  {% if theater_form.non_field_errors %}
+    <div class="form-error-summary" role="alert">{{ theater_form.non_field_errors }}</div>
+  {% endif %}
+  <div class="booking-form-grid">
+    <div class="booking-field">
+      <label for="{{ theater_form.name.id_for_label }}">Theater name</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">theaters</span>{{ theater_form.name }}</div>
+      {% for error in theater_form.name.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="booking-field">
+      <label for="{{ theater_form.location.id_for_label }}">Location</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">location_on</span>{{ theater_form.location }}</div>
+      {% for error in theater_form.location.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+  </div>
+  <div class="workflow-actions">
+    <button class="workflow-button" type="submit">
+      <span class="material-symbols-rounded" aria-hidden="true">save</span>
+      Save theater
+    </button>
+    <a class="workflow-cancel-link" href="{% url 'list_theater' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}">Cancel</a>
+  </div>
+</form>

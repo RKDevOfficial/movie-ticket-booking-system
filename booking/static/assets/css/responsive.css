@@ -1,0 +1,364 @@
+body:not(.g-sidenav-show) {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: clamp(1rem, 3vw, 2.5rem);
+  overflow-x: hidden;
+  color: #212529;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+body:not(.g-sidenav-show) *,
+body:not(.g-sidenav-show) *::before,
+body:not(.g-sidenav-show) *::after {
+  box-sizing: inherit;
+}
+
+body:not(.g-sidenav-show) h1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+body:not(.g-sidenav-show) table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin-block: 1rem;
+  overflow-x: auto;
+  border-collapse: collapse;
+  -webkit-overflow-scrolling: touch;
+}
+
+body:not(.g-sidenav-show) th,
+body:not(.g-sidenav-show) td {
+  padding: 0.65rem 0.8rem;
+  vertical-align: middle;
+}
+
+body:not(.g-sidenav-show) form {
+  width: min(100%, 38rem);
+}
+
+body:not(.g-sidenav-show) form p {
+  margin-block: 0 1rem;
+}
+
+body:not(.g-sidenav-show) input:not([type="checkbox"]):not([type="radio"]),
+body:not(.g-sidenav-show) select,
+body:not(.g-sidenav-show) textarea {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  border: 1px solid #adb5bd;
+  border-radius: 0.35rem;
+}
+
+body:not(.g-sidenav-show) textarea {
+  min-height: 7rem;
+}
+
+body:not(.g-sidenav-show) button,
+body:not(.g-sidenav-show) input[type="submit"],
+body:not(.g-sidenav-show) input[type="button"] {
+  min-height: 2.75rem;
+  padding: 0.55rem 0.9rem;
+}
+
+body:not(.g-sidenav-show) button a {
+  color: inherit;
+  text-decoration: none;
+}
+
+body:not(.g-sidenav-show) a {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 575.98px) {
+  body:not(.g-sidenav-show) {
+    padding: 1rem 0.75rem;
+  }
+
+  body:not(.g-sidenav-show) table {
+    font-size: 0.875rem;
+  }
+
+  body:not(.g-sidenav-show) th,
+  body:not(.g-sidenav-show) td {
+    padding: 0.55rem;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  body.g-sidenav-show {
+    overflow-x: hidden;
+    padding-top: 4vw;
+  }
+
+  body.g-sidenav-show .app-topbar {
+    height: 4vw;
+    padding-inline: 0.9vw;
+    gap: 0.8vw;
+  }
+
+  body.g-sidenav-show .topbar-brand { gap: 0.6vw; }
+  body.g-sidenav-show .topbar-brand-img { width: 4vw; height: 4vw; }
+  body.g-sidenav-show .topbar-brand-name { font-size: 1.35vw; }
+  body.g-sidenav-show .topbar-tagline { margin-top: 0.2vw; font-size: 0.85vw; }
+  body.g-sidenav-show .topbar-actions { gap: 0.3vw; }
+  body.g-sidenav-show .topbar-icon {
+    width: 2.6vw;
+    height: 2.6vw;
+    border-radius: 0.6vw;
+  }
+  body.g-sidenav-show .topbar-profile {
+    width: 4vw;
+    min-width: 4vw;
+    max-width: 4vw;
+    height: 4vw;
+    min-height: 4vw;
+    max-height: 4vw;
+    flex-basis: 4vw;
+  }
+  body.g-sidenav-show .topbar-icon .material-symbols-rounded { font-size: 1.6vw; }
+
+  body.g-sidenav-show #sidenav-main .sidebar-toggle {
+    min-height: 3vw;
+    gap: 0.5vw;
+    margin: 0.5vw 0.6vw 0.25vw;
+    padding: 0.5vw 0.6vw;
+    font-size: 1vw;
+  }
+  body.g-sidenav-show #sidenav-main .sidebar-toggle .material-symbols-rounded { font-size: 1.5vw; }
+
+  body.g-sidenav-show > #sidenav-main {
+    display: flex;
+    flex-direction: column;
+    left: 0;
+    top: 4.2vw;
+    bottom: 0;
+    height: calc(100vh - 4.5vw);
+    width: min(14rem, 24vw) !important;
+    max-width: min(14rem, 24vw) !important;
+    margin: 0 0 0 0.4vw !important;
+    transform: translateX(0) !important;
+    transition: width 0.2s ease, max-width 0.2s ease;
+  }
+
+  body.g-sidenav-show #sidenav-main .navbar-collapse {
+    display: block !important;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto !important;
+    max-height: none;
+    overflow-y: auto;
+  }
+
+  body.g-sidenav-show #sidenav-main .sidenav-header {
+    position: relative;
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-inline: 0.6vw;
+  }
+
+  body.g-sidenav-show #sidenav-main .navbar-brand {
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.7vw;
+    padding: 0.8vw !important;
+  }
+
+  body.g-sidenav-show #sidenav-main .navbar-brand-img {
+    width: 3.2vw !important;
+    height: 3.2vw !important;
+    max-height: 3.2vw !important;
+  }
+
+  body.g-sidenav-show #sidenav-main .brand-name {
+    font-size: 1.35vw;
+  }
+
+  body.g-sidenav-show #sidenav-main .brand-tagline {
+    max-width: 17vw;
+    margin-top: 0.3vw;
+    font-size: 0.9vw;
+  }
+
+  body.g-sidenav-show #sidenav-main .navbar-brand > span,
+  body.g-sidenav-show #sidenav-main .nav-link-text,
+  body.g-sidenav-show #sidenav-main .nav-item > h6 {
+    display: initial !important;
+  }
+
+  body.g-sidenav-show #sidenav-main .navbar-brand > .brand-copy {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  body.g-sidenav-show #sidenav-main .navbar-nav .nav-link {
+    justify-content: flex-start;
+    gap: 0.6vw;
+    margin-inline: 0.6vw;
+    padding: 0.8vw 0.7vw;
+    font-size: 1vw;
+    line-height: 1.25;
+  }
+
+  body.g-sidenav-show #sidenav-main .navbar-nav .nav-link > .material-symbols-rounded {
+    flex-basis: 1.5vw;
+    width: 1.5vw;
+    height: 1.5vw;
+    margin-right: 0;
+    font-size: 1.4vw;
+  }
+
+  body.g-sidenav-show #sidenav-main .nav-link-text {
+    margin-left: 0 !important;
+    font-size: 1vw;
+  }
+
+  body.g-sidenav-show.sidebar-expanded > #sidenav-main {
+    width: min(14rem, 24vw) !important;
+    max-width: min(14rem, 24vw) !important;
+  }
+
+  body.g-sidenav-show.sidebar-expanded #sidenav-main .sidenav-header {
+    flex-direction: row;
+    justify-content: space-between;
+    padding-inline: 0.5rem;
+  }
+
+  body.g-sidenav-show.sidebar-expanded #sidenav-main .navbar-brand {
+    justify-content: flex-start;
+  }
+
+  body.g-sidenav-show.sidebar-expanded #sidenav-main .navbar-brand > span,
+  body.g-sidenav-show.sidebar-expanded #sidenav-main .nav-link-text {
+    display: initial !important;
+  }
+
+  body.g-sidenav-show.sidebar-expanded #sidenav-main .navbar-brand > .brand-copy {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  body.g-sidenav-show.sidebar-expanded #sidenav-main .nav-item > h6 {
+    display: block !important;
+  }
+
+  body.g-sidenav-show.sidebar-expanded #sidenav-main .navbar-nav .nav-link {
+    justify-content: flex-start;
+    margin-inline: 0.75rem;
+    padding-inline: 0.5rem;
+  }
+
+  body.g-sidenav-show.sidebar-expanded #sidenav-main .navbar-nav .nav-link > .material-symbols-rounded {
+    margin-right: 0.25rem;
+  }
+
+  body.g-sidenav-show #sidenav-main.fixed-start + main.main-content {
+    width: calc(100% - min(15rem, 26vw)) !important;
+    max-width: calc(100% - min(15rem, 26vw)) !important;
+    margin-left: min(15rem, 26vw) !important;
+    min-width: 0;
+  }
+
+  body.g-sidenav-show.sidebar-expanded #sidenav-main.fixed-start + main.main-content {
+    width: calc(100% - 15rem) !important;
+    max-width: calc(100% - 15rem) !important;
+    margin-left: 15rem !important;
+  }
+
+  body.g-sidenav-show .navbar-main {
+    margin-right: 0.5rem !important;
+    margin-left: 0.5rem !important;
+  }
+
+  body.g-sidenav-show #iconNavbarSidenav {
+    display: none !important;
+  }
+}
+
+@media (max-width: 575.98px) and (max-device-width: 768px) {
+  body.g-sidenav-show > #sidenav-main {
+    position: relative !important;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    width: calc(100% - 1rem) !important;
+    max-width: none !important;
+    height: auto;
+    margin: 0.5rem 0.5rem 0 !important;
+    transform: none !important;
+  }
+
+  body.g-sidenav-show #sidenav-main .navbar-collapse {
+    display: block !important;
+    flex: 0 1 auto;
+    overflow: visible;
+  }
+
+  body.g-sidenav-show #sidenav-main .navbar-brand {
+    gap: 0.65rem;
+    padding: 0.75rem 1rem !important;
+  }
+
+  body.g-sidenav-show #sidenav-main .navbar-brand-img {
+    width: 48px !important;
+    height: 48px !important;
+    max-height: 48px !important;
+  }
+
+  body.g-sidenav-show #sidenav-main .brand-name { font-size: 1.125rem; }
+  body.g-sidenav-show #sidenav-main .brand-tagline {
+    max-width: 10.5rem;
+    margin-top: 0.3rem;
+    font-size: 0.7rem;
+  }
+
+  body.g-sidenav-show #sidenav-main .navbar-nav .nav-link {
+    justify-content: flex-start;
+    gap: 0;
+    margin-inline: 0.75rem;
+    padding: 0.65rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25;
+  }
+
+  body.g-sidenav-show #sidenav-main .navbar-nav .nav-link > .material-symbols-rounded {
+    flex-basis: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.25rem;
+    font-size: 1.25rem;
+  }
+
+  body.g-sidenav-show #sidenav-main .nav-link-text {
+    margin-left: 0.25rem !important;
+    font-size: 0.875rem;
+  }
+
+  body.g-sidenav-show #sidenav-main.fixed-start + main.main-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  body.g-sidenav-show .navbar-main .container-fluid {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  body.g-sidenav-show .navbar-main .breadcrumb {
+    margin-right: auto !important;
+  }
+}

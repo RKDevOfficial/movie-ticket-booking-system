@@ -1,0 +1,40 @@
+<form class="workflow-form booking-modal-form" method="post">
+  {% csrf_token %}
+  {% if showtime_form.non_field_errors %}
+    <div class="form-error-summary" role="alert">{{ showtime_form.non_field_errors }}</div>
+  {% endif %}
+  <div class="booking-form-grid">
+    <div class="booking-field booking-field-wide">
+      <label for="{{ showtime_form.movie.id_for_label }}">Movie</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">movie</span>{{ showtime_form.movie }}</div>
+      {% for error in showtime_form.movie.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="booking-field booking-field-wide">
+      <label for="{{ showtime_form.hall.id_for_label }}">Cinema hall</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">meeting_room</span>{{ showtime_form.hall }}</div>
+      {% for error in showtime_form.hall.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="booking-field">
+      <label for="{{ showtime_form.show_date.id_for_label }}">Show date</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">calendar_month</span>{{ showtime_form.show_date }}</div>
+      {% for error in showtime_form.show_date.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="booking-field">
+      <label for="{{ showtime_form.start_time.id_for_label }}">Start time</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">schedule</span>{{ showtime_form.start_time }}</div>
+      {% for error in showtime_form.start_time.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="booking-field">
+      <label for="{{ showtime_form.end_time.id_for_label }}">End time</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">schedule</span>{{ showtime_form.end_time }}</div>
+      {% for error in showtime_form.end_time.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+  </div>
+  <div class="workflow-actions">
+    <button class="workflow-button" type="submit">
+      <span class="material-symbols-rounded" aria-hidden="true">save</span>
+      Save showtime
+    </button>
+    <a class="workflow-cancel-link" href="{% url 'list_showtime' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}">Cancel</a>
+  </div>
+</form>

@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="workflow-page hall-list-page">
+  <header class="workflow-heading">
+    <div>
+      <p class="dashboard-kicker">CINEMA OPERATIONS</p>
+      <h2>Cinema halls</h2>
+      <p class="workflow-subtitle">Manage screening rooms, their theaters, and seating capacity.</p>
+    </div>
+    <a class="workflow-button" href="{% url 'list_hall' %}?hall_form=add&amp;q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}">
+      <span class="material-symbols-rounded" aria-hidden="true">add</span>
+      Add hall
+    </a>
+  </header>
+
+  <div class="booking-summary-grid hall-summary-grid">
+    <article class="booking-summary-card">
+      <span class="summary-symbol blue-symbol material-symbols-rounded" aria-hidden="true">meeting_room</span>
+      <span class="summary-label">Cinema halls</span>
+      <strong>{{ hall_count }}</strong>
+    </article>
+    <article class="booking-summary-card">
+      <span class="summary-symbol green-symbol material-symbols-rounded" aria-hidden="true">theaters</span>
+      <span class="summary-label">Theaters</span>
+      <strong>{{ theater_count }}</strong>
+    </article>
+    <article class="booking-summary-card">
+      <span class="summary-symbol orange-symbol material-symbols-rounded" aria-hidden="true">event_seat</span>
+      <span class="summary-label">Total seat capacity</span>
+      <strong>{{ seat_capacity }}</strong>
+    </article>
+  </div>
+
+  <div class="workflow-card table-card">
+    <form class="booking-search" method="get" action="{% url 'list_hall' %}" role="search">
+      <label class="booking-search-control">
+        <span class="material-symbols-rounded" aria-hidden="true">search</span>
+        <span class="visually-hidden">Search cinema halls</span>
+        <input type="search" name="q" value="{{ search_query }}" placeholder="Search hall, theater, location, capacity, or hall ID...">
+      </label>
+      <button class="booking-search-button" type="submit">Search</button>
+      <label class="booking-limit-control">Rows
+        <select name="limit" aria-label="Rows per page" onchange="this.form.submit()">
+          <option value="10" {% if page_limit == '10' %}selected{% endif %}>10</option>
+          <option value="25" {% if page_limit == '25' %}selected{% endif %}>25</option>
+          <option value="50" {% if page_limit == '50' %}selected{% endif %}>50</option>
+        </select>
+      </label>
+      {% if search_query %}<a class="booking-search-clear" href="{% url 'list_hall' %}?limit={{ page_limit }}">Clear</a>{% endif %}
+    </form>
+    <div class="workflow-table-wrap">
+      <table class="workflow-table hall-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Hall</th>
+            <th>Theater</th>
+            <th>Location</th>
+            <th>Seat capacity</th>
+            <th>Seats created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in hall %}
+            <tr>
+              <td><span class="booking-reference">#{{ item.id }}</span></td>
+              <td>
+                <div class="table-primary-cell">
+                  <span class="hall-table-icon material-symbols-rounded" aria-hidden="true">meeting_room</span>
+                  <span><strong>{{ item.name }}</strong><small>Cinema hall</small></span>
+                </div>
+              </td>
+              <td>{{ item.theater.name }}</td>
+              <td class="hall-location">{{ item.theater.location }}</td>
+              <td><span class="seat-capacity-chip">{{ item.capacity }} seats</span></td>
+              <td><span class="hall-seat-count">{{ item.seat_total }}</span></td>
+              <td class="workflow-row-actions">
+                <a class="row-action" href="{% url 'list_hall' %}?hall_form=edit&amp;hall_id={{ item.pk }}&amp;q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}" aria-label="Edit {{ item.name }}" title="Edit hall">
+                  <span class="material-symbols-rounded" aria-hidden="true">edit</span>
+                </a>
+                <a class="row-action danger-link" href="{% url 'delete_hall' item.pk %}" aria-label="Delete {{ item.name }}" title="Delete hall">
+                  <span class="material-symbols-rounded" aria-hidden="true">delete</span>
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td class="workflow-empty" colspan="7">
+              <span class="material-symbols-rounded" aria-hidden="true">meeting_room</span>
+              <strong>{% if search_query %}No matching halls{% else %}No cinema halls yet{% endif %}</strong>
+              <span>{% if search_query %}Try a different hall, theater, or location.{% else %}Add a hall to begin managing your cinema rooms.{% endif %}</span>
+            </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <footer class="booking-pagination">
+      <p>Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} halls</p>
+      {% if page_obj.paginator.count %}
+        <nav class="booking-pagination-controls" aria-label="Hall list pages">
+          {% if page_obj.has_previous %}
+            <a class="booking-page-arrow" href="?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.previous_page_number }}" aria-label="Previous page" title="Previous page">&lt;</a>
+          {% else %}
+            <span class="booking-page-arrow is-disabled" aria-disabled="true" aria-label="No previous page">&lt;</span>
+          {% endif %}
+          <span class="booking-page-count">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+          {% if page_obj.has_next %}
+            <a class="booking-page-arrow" href="?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.next_page_number }}" aria-label="Next page" title="Next page">&gt;</a>
+          {% else %}
+            <span class="booking-page-arrow is-disabled" aria-disabled="true" aria-label="No next page">&gt;</span>
+          {% endif %}
+        </nav>
+      {% endif %}
+    </footer>
+  </div>
+</section>
+{% if hall_form %}
+  <div class="booking-modal-layer">
+    <a class="booking-modal-backdrop" href="{% url 'list_hall' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}" aria-label="Close hall form"></a>
+    <section class="booking-modal" role="dialog" aria-modal="true" aria-labelledby="hall-modal-title">
+      <header class="booking-modal-header">
+        <div>
+          <p class="dashboard-kicker">CINEMA OPERATIONS</p>
+          <h2 id="hall-modal-title">{{ hall_form_title }}</h2>
+          <p class="workflow-subtitle">Enter the cinema hall details below.</p>
+        </div>
+        <a class="booking-modal-close" href="{% url 'list_hall' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}" aria-label="Close form">
+          <span class="material-symbols-rounded" aria-hidden="true">close</span>
+        </a>
+      </header>
+      {% include 'hall/_hall_form_fields.html' %}
+    </section>
+  </div>
+{% endif %}
+{% endblock %}

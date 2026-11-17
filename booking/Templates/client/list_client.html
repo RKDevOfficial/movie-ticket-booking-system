@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="workflow-page client-list-page">
+  <header class="workflow-heading">
+    <div>
+      <p class="dashboard-kicker">CLIENT MANAGEMENT</p>
+      <h2>Clients</h2>
+      <p class="workflow-subtitle">Manage client contact details and booking history.</p>
+    </div>
+    <a class="workflow-button" href="{% url 'list_client' %}?client_form=add&amp;q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}">
+      <span class="material-symbols-rounded" aria-hidden="true">person_add</span>
+      Add client
+    </a>
+  </header>
+
+  <div class="booking-summary-grid client-summary-grid">
+    <article class="booking-summary-card">
+      <span class="summary-symbol blue-symbol material-symbols-rounded" aria-hidden="true">group</span>
+      <span class="summary-label">Total clients</span>
+      <strong>{{ client_count }}</strong>
+    </article>
+    <article class="booking-summary-card">
+      <span class="summary-symbol green-symbol material-symbols-rounded" aria-hidden="true">person</span>
+      <span class="summary-label">Male</span>
+      <strong>{{ male_count }}</strong>
+    </article>
+    <article class="booking-summary-card">
+      <span class="summary-symbol orange-symbol material-symbols-rounded" aria-hidden="true">person</span>
+      <span class="summary-label">Female</span>
+      <strong>{{ female_count }}</strong>
+    </article>
+  </div>
+
+  <div class="workflow-card table-card">
+    <form class="booking-search" method="get" action="{% url 'list_client' %}" role="search">
+      <label class="booking-search-control">
+        <span class="material-symbols-rounded" aria-hidden="true">search</span>
+        <span class="visually-hidden">Search clients</span>
+        <input type="search" name="q" value="{{ search_query }}" placeholder="Search name, email, phone, gender, or client ID...">
+      </label>
+      <button class="booking-search-button" type="submit">Search</button>
+      <label class="booking-limit-control">Rows
+        <select name="limit" aria-label="Rows per page" onchange="this.form.submit()">
+          <option value="10" {% if page_limit == '10' %}selected{% endif %}>10</option>
+          <option value="25" {% if page_limit == '25' %}selected{% endif %}>25</option>
+          <option value="50" {% if page_limit == '50' %}selected{% endif %}>50</option>
+        </select>
+      </label>
+      {% if search_query %}<a class="booking-search-clear" href="{% url 'list_client' %}?limit={{ page_limit }}">Clear</a>{% endif %}
+    </form>
+    <div class="workflow-table-wrap">
+      <table class="workflow-table client-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Client</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Bookings</th>
+            <th>Gender</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in client %}
+            <tr>
+              <td><span class="booking-reference">#{{ c.id }}</span></td>
+              <td>
+                <div class="table-primary-cell">
+                  <span class="table-avatar">{{ c.first_name|first|upper }}</span>
+                  <span><strong>{{ c.first_name }} {{ c.last_name }}</strong><small>Client</small></span>
+                </div>
+              </td>
+              <td class="client-contact">{{ c.email }}</td>
+              <td class="client-contact">{{ c.phone_number }}</td>
+              <td><span class="client-booking-count">{{ c.booking_total }}</span></td>
+              <td><span class="client-gender-pill">{{ c.gender }}</span></td>
+              <td class="workflow-row-actions">
+                <a class="row-action" href="{% url 'list_client' %}?client_form=edit&amp;client_id={{ c.pk }}&amp;q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}" aria-label="Edit {{ c.first_name }} {{ c.last_name }}" title="Edit client">
+                  <span class="material-symbols-rounded" aria-hidden="true">edit</span>
+                </a>
+                <a class="row-action danger-link" href="{% url 'delete_client' c.pk %}" aria-label="Delete {{ c.first_name }} {{ c.last_name }}" title="Delete client">
+                  <span class="material-symbols-rounded" aria-hidden="true">delete</span>
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td class="workflow-empty" colspan="7">
+              <span class="material-symbols-rounded" aria-hidden="true">group</span>
+              <strong>{% if search_query %}No matching clients{% else %}No clients yet{% endif %}</strong>
+              <span>{% if search_query %}Try a different name, email, phone number, or ID.{% else %}Add a client to get started.{% endif %}</span>
+            </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <footer class="booking-pagination">
+      <p>Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} clients</p>
+      {% if page_obj.paginator.count %}
+        <nav class="booking-pagination-controls" aria-label="Client list pages">
+          {% if page_obj.has_previous %}
+            <a class="booking-page-arrow" href="?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.previous_page_number }}" aria-label="Previous page" title="Previous page">&lt;</a>
+          {% else %}
+            <span class="booking-page-arrow is-disabled" aria-disabled="true" aria-label="No previous page">&lt;</span>
+          {% endif %}
+          <span class="booking-page-count">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+          {% if page_obj.has_next %}
+            <a class="booking-page-arrow" href="?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.next_page_number }}" aria-label="Next page" title="Next page">&gt;</a>
+          {% else %}
+            <span class="booking-page-arrow is-disabled" aria-disabled="true" aria-label="No next page">&gt;</span>
+          {% endif %}
+        </nav>
+      {% endif %}
+    </footer>
+  </div>
+</section>
+{% if client_form %}
+  <div class="booking-modal-layer">
+    <a class="booking-modal-backdrop" href="{% url 'list_client' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}" aria-label="Close client form"></a>
+    <section class="booking-modal" role="dialog" aria-modal="true" aria-labelledby="client-modal-title">
+      <header class="booking-modal-header">
+        <div>
+          <p class="dashboard-kicker">CLIENT MANAGEMENT</p>
+          <h2 id="client-modal-title">{{ client_form_title }}</h2>
+          <p class="workflow-subtitle">Enter the client details below.</p>
+        </div>
+        <a class="booking-modal-close" href="{% url 'list_client' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}" aria-label="Close form">
+          <span class="material-symbols-rounded" aria-hidden="true">close</span>
+        </a>
+      </header>
+      {% include 'client/_client_form_fields.html' %}
+    </section>
+  </div>
+{% endif %}
+{% endblock %}

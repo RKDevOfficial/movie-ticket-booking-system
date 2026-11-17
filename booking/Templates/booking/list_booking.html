@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="workflow-page booking-list-page">
+  <header class="workflow-heading">
+    <div>
+      <p class="dashboard-kicker">BOOKING MANAGEMENT</p>
+      <h2>Bookings</h2>
+      <p class="workflow-subtitle">Review reservations, payment status, and client details.</p>
+    </div>
+    <a class="workflow-button" href="{% url 'list_booking' %}?booking_form=add&amp;q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}">
+      <span class="material-symbols-rounded" aria-hidden="true">add</span>
+      New booking
+    </a>
+  </header>
+
+  <div class="booking-summary-grid">
+    <article class="booking-summary-card">
+      <span class="summary-symbol blue-symbol material-symbols-rounded" aria-hidden="true">confirmation_number</span>
+      <span class="summary-label">Total bookings</span>
+      <strong>{{ booking_count }}</strong>
+    </article>
+    <article class="booking-summary-card">
+      <span class="summary-symbol green-symbol material-symbols-rounded" aria-hidden="true">task_alt</span>
+      <span class="summary-label">Paid</span>
+      <strong>{{ paid_booking_count }}</strong>
+    </article>
+    <article class="booking-summary-card">
+      <span class="summary-symbol orange-symbol material-symbols-rounded" aria-hidden="true">pending_actions</span>
+      <span class="summary-label">Pending</span>
+      <strong>{{ pending_booking_count }}</strong>
+    </article>
+    <article class="booking-summary-card revenue-summary">
+      <span class="summary-symbol orange-symbol material-symbols-rounded" aria-hidden="true">payments</span>
+      <span class="summary-label">Paid revenue</span>
+      <strong>{{ booking_revenue|floatformat:2 }}</strong>
+    </article>
+  </div>
+
+  <div class="workflow-card table-card">
+    <form class="booking-search" method="get" action="{% url 'list_booking' %}" role="search">
+      <label class="booking-search-control">
+        <span class="material-symbols-rounded" aria-hidden="true">search</span>
+        <span class="visually-hidden">Search bookings</span>
+        <input type="search" name="q" value="{{ search_query }}" placeholder="Search booking ID, client, movie, seat, or payment...">
+      </label>
+      <button class="booking-search-button" type="submit">Search</button>
+      <label class="booking-limit-control">Rows
+        <select name="limit" aria-label="Rows per page" onchange="this.form.submit()">
+          <option value="10" {% if page_limit == '10' %}selected{% endif %}>10</option>
+          <option value="25" {% if page_limit == '25' %}selected{% endif %}>25</option>
+          <option value="50" {% if page_limit == '50' %}selected{% endif %}>50</option>
+        </select>
+      </label>
+      {% if search_query %}<a class="booking-search-clear" href="{% url 'list_booking' %}?limit={{ page_limit }}">Clear</a>{% endif %}
+    </form>
+    <div class="workflow-table-wrap">
+      <table class="workflow-table">
+        <thead>
+          <tr>
+            <th>Booking</th>
+            <th>Client</th>
+            <th>Showtime</th>
+            <th>Seat</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Payment date</th>
+            <th>Payment method</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in booking %}
+            <tr>
+              <td><span class="booking-reference">#{{ b.id }}</span></td>
+              <td>
+                <div class="table-primary-cell">
+                  <span class="table-avatar">{{ b.client.first_name|first|upper }}</span>
+                  <span><strong>{{ b.client.first_name }} {{ b.client.last_name }}</strong><small>{{ b.client.email }}</small></span>
+                </div>
+              </td>
+              <td><strong>{{ b.showtime.movie.title }}</strong><small class="table-secondary">{{ b.showtime.show_date|date:"d M Y" }} · {{ b.showtime.start_time|time:"g:i A" }}</small></td>
+              <td><span class="seat-chip">{{ b.seat.seat_number }}</span></td>
+              <td class="amount-cell">{{ b.amount|floatformat:2 }}</td>
+              <td><span class="status-pill status-{{ b.payment_status|lower }}">{{ b.payment_status }}</span></td>
+              <td>{{ b.payment_date|date:"d M Y"|default:"—" }}</td>
+              <td>{{ b.payment_method }}</td>
+              <td class="workflow-row-actions">
+                <a class="row-action" href="{% url 'list_booking' %}?booking_form=edit&amp;booking_id={{ b.pk }}&amp;q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}" aria-label="Edit booking {{ b.id }}" title="Edit booking">
+                  <span class="material-symbols-rounded" aria-hidden="true">edit</span>
+                </a>
+                <a class="row-action danger-link" href="{% url 'delete_booking' b.pk %}" aria-label="Delete booking {{ b.id }}" title="Delete booking">
+                  <span class="material-symbols-rounded" aria-hidden="true">delete</span>
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td class="workflow-empty" colspan="9">
+              <span class="material-symbols-rounded" aria-hidden="true">confirmation_number</span>
+              <strong>{% if search_query %}No matching bookings{% else %}No bookings yet{% endif %}</strong>
+              <span>{% if search_query %}Try a different name, movie, seat, or payment term.{% else %}Create a booking to see it listed here.{% endif %}</span>
+            </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <footer class="booking-pagination">
+      <p>Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }} bookings</p>
+      {% if page_obj.paginator.count %}
+        <nav class="booking-pagination-controls" aria-label="Booking list pages">
+          {% if page_obj.has_previous %}
+            <a class="booking-page-arrow" href="?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.previous_page_number }}" aria-label="Previous page" title="Previous page">‹</a>
+          {% else %}
+            <span class="booking-page-arrow is-disabled" aria-disabled="true" aria-label="No previous page">‹</span>
+          {% endif %}
+          <span class="booking-page-count">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+          {% if page_obj.has_next %}
+            <a class="booking-page-arrow" href="?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.next_page_number }}" aria-label="Next page" title="Next page">›</a>
+          {% else %}
+            <span class="booking-page-arrow is-disabled" aria-disabled="true" aria-label="No next page">›</span>
+          {% endif %}
+        </nav>
+      {% endif %}
+    </footer>
+  </div>
+</section>
+{% if booking_form %}
+  <div class="booking-modal-layer">
+    <a class="booking-modal-backdrop" href="{% url 'list_booking' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}" aria-label="Close booking form"></a>
+    <section class="booking-modal" role="dialog" aria-modal="true" aria-labelledby="booking-modal-title">
+      <header class="booking-modal-header">
+        <div>
+          <p class="dashboard-kicker">BOOKING MANAGEMENT</p>
+          <h2 id="booking-modal-title">{{ booking_form_title }}</h2>
+          <p class="workflow-subtitle">Complete the fields below to create a booking.</p>
+        </div>
+        <a class="booking-modal-close" href="{% url 'list_booking' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}" aria-label="Close form">
+          <span class="material-symbols-rounded" aria-hidden="true">close</span>
+        </a>
+      </header>
+      {% include 'booking/_booking_form_fields.html' %}
+    </section>
+  </div>
+{% endif %}
+{% endblock %}

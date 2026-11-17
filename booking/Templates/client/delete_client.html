@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="workflow-page">
+  <header class="workflow-heading">
+    <div>
+      <p class="dashboard-kicker">CLIENT MANAGEMENT</p>
+      <h2>Delete client</h2>
+      <p class="workflow-subtitle">Remove a client record from the system.</p>
+    </div>
+    <a class="workflow-back-link" href="{% url 'list_client' %}">
+      <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+      Back to clients
+    </a>
+  </header>
+
+  <div class="workflow-card delete-card">
+    <div class="delete-card-heading">
+      <span class="delete-icon material-symbols-rounded" aria-hidden="true">warning</span>
+      <div>
+        <h3>Delete {{ client.first_name }} {{ client.last_name }}?</h3>
+        <p>This action cannot be undone. Deleting this client also deletes their linked bookings.</p>
+      </div>
+    </div>
+    <div class="workflow-actions">
+      <form method="post">
+        {% csrf_token %}
+        <button class="workflow-button danger-button" type="submit">
+          <span class="material-symbols-rounded" aria-hidden="true">delete</span>
+          Delete client
+        </button>
+      </form>
+      <a class="workflow-cancel-link" href="{% url 'list_client' %}">Cancel</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

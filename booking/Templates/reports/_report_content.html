@@ -1,0 +1,100 @@
+<section class="report-page">
+  <header class="workflow-heading report-heading">
+    <div>
+      <p class="dashboard-kicker">BUSINESS INSIGHTS</p>
+      <h2>Overall system report</h2>
+      <p class="workflow-subtitle">System totals and booking activity for the selected payment date range.</p>
+    </div>
+    <a class="workflow-button report-download-button" href="{% url 'reports' %}?start_date={{ start_date|date:'Y-m-d' }}&amp;end_date={{ end_date|date:'Y-m-d' }}&amp;format=html">
+      <span class="material-symbols-rounded" aria-hidden="true">download</span>
+      Download branded report
+    </a>
+  </header>
+  <p class="report-download-note">The downloaded report includes the RK Tickets logo. Use Print / Save as PDF to create a PDF copy.</p>
+
+  <h3 class="report-section-title">Overall system</h3>
+  <div class="booking-summary-grid report-system-grid">
+    <article class="booking-summary-card"><span class="summary-symbol blue-symbol material-symbols-rounded" aria-hidden="true">group</span><span class="summary-label">Clients</span><strong>{{ system_client_count }}</strong></article>
+    <article class="booking-summary-card"><span class="summary-symbol orange-symbol material-symbols-rounded" aria-hidden="true">movie</span><span class="summary-label">Movies</span><strong>{{ system_movie_count }}</strong></article>
+    <article class="booking-summary-card"><span class="summary-symbol green-symbol material-symbols-rounded" aria-hidden="true">category</span><span class="summary-label">Categories</span><strong>{{ system_category_count }}</strong></article>
+    <article class="booking-summary-card"><span class="summary-symbol blue-symbol material-symbols-rounded" aria-hidden="true">theaters</span><span class="summary-label">Theaters</span><strong>{{ system_theater_count }}</strong></article>
+    <article class="booking-summary-card"><span class="summary-symbol orange-symbol material-symbols-rounded" aria-hidden="true">meeting_room</span><span class="summary-label">Cinema halls</span><strong>{{ system_hall_count }}</strong></article>
+    <article class="booking-summary-card"><span class="summary-symbol green-symbol material-symbols-rounded" aria-hidden="true">event_seat</span><span class="summary-label">Seats</span><strong>{{ system_seat_count }}</strong></article>
+    <article class="booking-summary-card"><span class="summary-symbol blue-symbol material-symbols-rounded" aria-hidden="true">event</span><span class="summary-label">Showtimes</span><strong>{{ system_showtime_count }}</strong></article>
+    <article class="booking-summary-card"><span class="summary-symbol orange-symbol material-symbols-rounded" aria-hidden="true">confirmation_number</span><span class="summary-label">All bookings</span><strong>{{ system_booking_count }}</strong></article>
+  </div>
+  <p class="report-all-time-revenue">All-time paid revenue <strong>{{ system_paid_revenue|floatformat:2 }}</strong></p>
+
+  <div class="workflow-card report-filter-card">
+    <form class="report-filter-form" method="get" action="{% url 'reports' %}">
+      <label>From date
+        <input type="date" name="start_date" value="{{ start_date|date:'Y-m-d' }}" required>
+      </label>
+      <label>To date
+        <input type="date" name="end_date" value="{{ end_date|date:'Y-m-d' }}" required>
+      </label>
+      <label>Rows
+        <select name="limit" aria-label="Rows per page">
+          <option value="10" {% if page_limit == '10' %}selected{% endif %}>10</option>
+          <option value="25" {% if page_limit == '25' %}selected{% endif %}>25</option>
+          <option value="50" {% if page_limit == '50' %}selected{% endif %}>50</option>
+        </select>
+      </label>
+      <button class="workflow-button" type="submit">
+        <span class="material-symbols-rounded" aria-hidden="true">filter_alt</span>
+        Generate report
+      </button>
+    </form>
+    {% if date_error %}<p class="report-date-error" role="alert">Enter a valid date range. The report is showing this month instead.</p>{% endif %}
+  </div>
+
+  <h3 class="report-section-title">Payment activity</h3>
+  <div class="booking-summary-grid report-summary-grid">
+    <article class="booking-summary-card"><span class="summary-symbol blue-symbol material-symbols-rounded" aria-hidden="true">confirmation_number</span><span class="summary-label">Bookings in range</span><strong>{{ report_booking_count }}</strong></article>
+    <article class="booking-summary-card"><span class="summary-symbol green-symbol material-symbols-rounded" aria-hidden="true">task_alt</span><span class="summary-label">Paid bookings</span><strong>{{ report_paid_count }}</strong></article>
+    <article class="booking-summary-card"><span class="summary-symbol orange-symbol material-symbols-rounded" aria-hidden="true">pending_actions</span><span class="summary-label">Pending bookings</span><strong>{{ report_pending_count }}</strong></article>
+    <article class="booking-summary-card"><span class="summary-symbol green-symbol material-symbols-rounded" aria-hidden="true">payments</span><span class="summary-label">Paid revenue in range</span><strong>{{ report_revenue|floatformat:2 }}</strong></article>
+  </div>
+
+  <div class="workflow-card table-card">
+    <div class="report-table-heading">
+      <div>
+        <h3>Bookings</h3>
+        <p>{{ start_date|date:'d M Y' }} - {{ end_date|date:'d M Y' }}</p>
+      </div>
+      <a class="report-inline-download" href="{% url 'reports' %}?start_date={{ start_date|date:'Y-m-d' }}&amp;end_date={{ end_date|date:'Y-m-d' }}&amp;format=csv">
+        <span class="material-symbols-rounded" aria-hidden="true">download</span>Export CSV
+      </a>
+    </div>
+    <div class="workflow-table-wrap">
+      <table class="workflow-table report-table">
+        <thead><tr><th>Booking</th><th>Client</th><th>Movie</th><th>Show date</th><th>Payment</th><th>Method</th><th>Amount</th></tr></thead>
+        <tbody>
+          {% for b in report_bookings %}
+            <tr>
+              <td><span class="booking-reference">#{{ b.id }}</span><small class="table-secondary">{{ b.payment_date|date:'d M Y' }}</small></td>
+              <td><strong>{{ b.client.first_name }} {{ b.client.last_name }}</strong><small class="table-secondary">{{ b.client.email }}</small></td>
+              <td><strong>{{ b.showtime.movie.title }}</strong></td>
+              <td>{{ b.showtime.show_date|date:'d M Y' }}<small class="table-secondary">{{ b.showtime.start_time|time:'g:i A' }}</small></td>
+              <td><span class="status-pill status-{{ b.payment_status|lower }}">{{ b.payment_status }}</span></td>
+              <td>{{ b.payment_method }}</td>
+              <td class="amount-cell">{{ b.amount|floatformat:2 }}</td>
+            </tr>
+          {% empty %}
+            <tr><td class="workflow-empty" colspan="7"><span class="material-symbols-rounded" aria-hidden="true">summarize</span><strong>No bookings in this date range</strong><span>Choose another payment date range to generate a report.</span></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <footer class="booking-pagination">
+      <p>Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} bookings</p>
+      {% if page_obj.paginator.count %}
+        <nav class="booking-pagination-controls" aria-label="Report pages">
+          {% if page_obj.has_previous %}<a class="booking-page-arrow" data-report-page href="{% url 'reports' %}?start_date={{ start_date|date:'Y-m-d' }}&amp;end_date={{ end_date|date:'Y-m-d' }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.previous_page_number }}" aria-label="Previous page">&lt;</a>{% else %}<span class="booking-page-arrow is-disabled" aria-disabled="true">&lt;</span>{% endif %}
+          <span class="booking-page-count">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+          {% if page_obj.has_next %}<a class="booking-page-arrow" data-report-page href="{% url 'reports' %}?start_date={{ start_date|date:'Y-m-d' }}&amp;end_date={{ end_date|date:'Y-m-d' }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.next_page_number }}" aria-label="Next page">&gt;</a>{% else %}<span class="booking-page-arrow is-disabled" aria-disabled="true">&gt;</span>{% endif %}
+        </nav>
+      {% endif %}
+    </footer>
+  </div>
+</section>

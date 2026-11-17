@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="workflow-page">
+  <header class="workflow-heading">
+    <div>
+      <p class="dashboard-kicker">CATALOG MANAGEMENT</p>
+      <h2>Delete movie</h2>
+      <p class="workflow-subtitle">Remove a movie from the catalog.</p>
+    </div>
+    <a class="workflow-back-link" href="{% url 'list_movie' %}">
+      <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+      Back to movies
+    </a>
+  </header>
+
+  <div class="workflow-card delete-card">
+    <div class="delete-card-heading">
+      <span class="delete-icon material-symbols-rounded" aria-hidden="true">warning</span>
+      <div>
+        <h3>Delete “{{ movie.title }}”?</h3>
+        <p>This action cannot be undone. Any showtimes linked to this movie may also be removed.</p>
+      </div>
+    </div>
+    <div class="workflow-actions">
+      <form method="post">
+        {% csrf_token %}
+        <button class="workflow-button danger-button" type="submit">
+          <span class="material-symbols-rounded" aria-hidden="true">delete</span>
+          Delete movie
+        </button>
+      </form>
+      <a class="workflow-cancel-link" href="{% url 'list_movie' %}">Cancel</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

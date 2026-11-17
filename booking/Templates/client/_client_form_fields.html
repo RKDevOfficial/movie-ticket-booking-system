@@ -1,0 +1,40 @@
+<form class="workflow-form booking-modal-form" method="post">
+  {% csrf_token %}
+  {% if client_form.non_field_errors %}
+    <div class="form-error-summary" role="alert">{{ client_form.non_field_errors }}</div>
+  {% endif %}
+  <div class="booking-form-grid">
+    <div class="booking-field">
+      <label for="{{ client_form.first_name.id_for_label }}">First name</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">person</span>{{ client_form.first_name }}</div>
+      {% for error in client_form.first_name.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="booking-field">
+      <label for="{{ client_form.last_name.id_for_label }}">Last name</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">person</span>{{ client_form.last_name }}</div>
+      {% for error in client_form.last_name.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="booking-field booking-field-wide">
+      <label for="{{ client_form.email.id_for_label }}">Email address</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">mail</span>{{ client_form.email }}</div>
+      {% for error in client_form.email.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="booking-field">
+      <label for="{{ client_form.phone_number.id_for_label }}">Phone number</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">call</span>{{ client_form.phone_number }}</div>
+      {% for error in client_form.phone_number.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="booking-field">
+      <label for="{{ client_form.gender.id_for_label }}">Gender</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">wc</span>{{ client_form.gender }}</div>
+      {% for error in client_form.gender.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+  </div>
+  <div class="workflow-actions">
+    <button class="workflow-button" type="submit">
+      <span class="material-symbols-rounded" aria-hidden="true">save</span>
+      Save client
+    </button>
+    <a class="workflow-cancel-link" href="{% url 'list_client' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}">Cancel</a>
+  </div>
+</form>

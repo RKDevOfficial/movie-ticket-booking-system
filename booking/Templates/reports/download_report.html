@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RK Tickets System Report</title>
+  <style>
+    :root { color-scheme: light; font-family: Arial, Helvetica, sans-serif; color: #1f2937; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f2f4f7; }
+    .toolbar { position: sticky; top: 0; display: flex; justify-content: flex-end; gap: 0.75rem; padding: 1rem max(1rem, calc((100% - 1100px) / 2)); background: #101722; }
+    .toolbar button { padding: 0.65rem 1rem; border: 0; border-radius: 0.5rem; background: #f28a2e; color: #21160e; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    .report { max-width: 1100px; margin: 1.5rem auto; padding: 2.5rem; background: #fff; box-shadow: 0 12px 35px rgb(15 23 42 / 10%); }
+    .brand { display: flex; align-items: center; gap: 1rem; padding-bottom: 1.25rem; border-bottom: 3px solid #f28a2e; }
+    .brand img { width: 76px; height: 76px; object-fit: contain; }
+    .brand h1 { margin: 0; color: #172033; font-size: 1.6rem; }
+    .brand p { margin: 0.35rem 0 0; color: #667085; font-size: 0.85rem; }
+    .report-title { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin: 1.5rem 0 0.8rem; }
+    .report-title h2 { margin: 0; font-size: 1.25rem; }
+    .report-title p { margin: 0; color: #667085; font-size: 0.82rem; }
+    h3 { margin: 1.5rem 0 0.6rem; font-size: 0.95rem; }
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.65rem; }
+    .metric { padding: 0.8rem; border: 1px solid #e4e7ec; border-radius: 0.55rem; background: #fafbfc; }
+    .metric span { display: block; color: #667085; font-size: 0.72rem; }
+    .metric strong { display: block; margin-top: 0.35rem; color: #172033; font-size: 1.2rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
+    th, td { padding: 0.65rem 0.55rem; border-bottom: 1px solid #e4e7ec; text-align: left; vertical-align: top; }
+    th { background: #f5f7fa; color: #475467; font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .status { font-weight: 700; }
+    .footer { margin-top: 1.5rem; padding-top: 0.75rem; border-top: 1px solid #e4e7ec; color: #667085; font-size: 0.68rem; }
+    @media (max-width: 700px) {
+      .report { margin: 0; padding: 1rem; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .report-title { align-items: flex-start; flex-direction: column; }
+      .table-wrap { overflow-x: auto; }
+      table { min-width: 800px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .toolbar { display: none; }
+      .report { max-width: none; margin: 0; padding: 0; box-shadow: none; }
+      @page { size: landscape; margin: 12mm; }
+      thead { display: table-header-group; }
+      tr { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <button type="button" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+  <main class="report">
+    <header class="brand">
+      <img src="{{ logo_data_uri }}" alt="RK Tickets logo">
+      <div>
+        <h1>RK Tickets</h1>
+        <p>Your Cinema Experiences Starts Here</p>
+      </div>
+    </header>
+
+    <div class="report-title">
+      <div><h2>Overall system report</h2><p>Generated {{ start_date|date:'d M Y' }} for payment activity {{ start_date|date:'d M Y' }} - {{ end_date|date:'d M Y' }}</p></div>
+      <p>RK Tickets management report</p>
+    </div>
+
+    <h3>Overall system</h3>
+    <section class="metrics">
+      <div class="metric"><span>Clients</span><strong>{{ system_client_count }}</strong></div>
+      <div class="metric"><span>Movies</span><strong>{{ system_movie_count }}</strong></div>
+      <div class="metric"><span>Categories</span><strong>{{ system_category_count }}</strong></div>
+      <div class="metric"><span>Theaters</span><strong>{{ system_theater_count }}</strong></div>
+      <div class="metric"><span>Cinema halls</span><strong>{{ system_hall_count }}</strong></div>
+      <div class="metric"><span>Seats</span><strong>{{ system_seat_count }}</strong></div>
+      <div class="metric"><span>Showtimes</span><strong>{{ system_showtime_count }}</strong></div>
+      <div class="metric"><span>All bookings</span><strong>{{ system_booking_count }}</strong></div>
+    </section>
+    <p><strong>All-time paid revenue:</strong> {{ system_paid_revenue|floatformat:2 }}</p>
+
+    <h3>Payment activity for selected period</h3>
+    <section class="metrics">
+      <div class="metric"><span>Bookings</span><strong>{{ report_booking_count }}</strong></div>
+      <div class="metric"><span>Paid</span><strong>{{ report_paid_count }}</strong></div>
+      <div class="metric"><span>Pending</span><strong>{{ report_pending_count }}</strong></div>
+      <div class="metric"><span>Paid revenue</span><strong>{{ report_revenue|floatformat:2 }}</strong></div>
+    </section>
+
+    <h3>Bookings</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Payment date</th><th>Client</th><th>Movie</th><th>Showtime</th><th>Hall</th><th>Seat</th><th>Status</th><th>Method</th><th>Amount</th></tr></thead>
+        <tbody>
+          {% for booking in report_bookings %}
+            <tr>
+              <td>#{{ booking.id }}</td>
+              <td>{{ booking.payment_date|date:'d M Y' }}</td>
+              <td>{{ booking.client.first_name }} {{ booking.client.last_name }}<br>{{ booking.client.email }}</td>
+              <td>{{ booking.showtime.movie.title }}</td>
+              <td>{{ booking.showtime.show_date|date:'d M Y' }} {{ booking.showtime.start_time|time:'g:i A' }}</td>
+              <td>{{ booking.showtime.hall.name }}</td>
+              <td>{{ booking.seat.seat_number }}</td>
+              <td class="status">{{ booking.payment_status }}</td>
+              <td>{{ booking.payment_method }}</td>
+              <td>{{ booking.amount|floatformat:2 }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="10">No bookings were recorded during this period.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <footer class="footer">Generated by RK Tickets &bull; {{ start_date|date:'d M Y' }} - {{ end_date|date:'d M Y' }}</footer>
+  </main>
+</body>
+</html>

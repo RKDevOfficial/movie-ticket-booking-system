@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'assets/css/responsive.css' %}">
+    <title>Add Client</title>
+    <style>
+        .slogan {
+            font-style: italic;
+            color: #666;
+            margin-top: -0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to RK Tickets</h1>
+    <p class="slogan">Your Cinema Experience Starts Here</p>
+    <button><a href="{% url "list_client" %}">BACK</a></button>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button type="submit">SAVE</button>
+    </form>
+
+</body>
+</html>

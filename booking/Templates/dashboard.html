@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="dashboard-page">
+  <div class="dashboard-intro">
+    <div>
+      <p class="dashboard-kicker">OVERVIEW</p>
+      <h2>Your cinema, at a glance</h2>
+    </div>
+    <span class="dashboard-date">{{ today|date:"l, j F Y" }}</span>
+  </div>
+
+  <div class="stat-grid">
+    <article class="stat-card">
+      <div class="stat-icon blue"><span class="material-symbols-rounded">confirmation_number</span></div>
+      <p>Bookings</p><strong>{{ booking_count }}</strong>
+      <small>All recorded bookings</small>
+    </article>
+    <article class="stat-card">
+      <div class="stat-icon amber"><span class="material-symbols-rounded">event_seat</span></div>
+      <p>Seats booked</p><strong>{{ booked_seat_count }}</strong>
+      <small>Across all showtimes</small>
+    </article>
+    <article class="stat-card">
+      <div class="stat-icon violet"><span class="material-symbols-rounded">payments</span></div>
+      <p>Paid revenue</p><strong>{{ paid_revenue|floatformat:0 }}</strong>
+      <small>{{ paid_booking_count }} paid bookings</small>
+    </article>
+    <article class="stat-card">
+      <div class="stat-icon teal"><span class="material-symbols-rounded">movie</span></div>
+      <p>Movies</p><strong>{{ movie_count }}</strong>
+      <small>In your catalogue</small>
+    </article>
+    <article class="stat-card">
+      <div class="stat-icon amber"><span class="material-symbols-rounded">schedule</span></div>
+      <p>Upcoming shows</p><strong>{{ showtime_count }}</strong>
+      <small>{{ client_count }} clients registered</small>
+    </article>
+  </div>
+
+  <div class="dashboard-feature-grid">
+    <section class="feature-card">
+      <img class="feature-backdrop" src="{% static 'assets/img/bookings.jpg' %}" alt="" aria-hidden="true">
+      <div class="feature-copy">
+        <p class="dashboard-kicker">NOW SHOWING IN YOUR CATALOGUE</p>
+        {% if featured_movie %}
+          <h3>{{ featured_movie.title }}</h3>
+          <p>{{ featured_movie.category.category_name }} <span class="feature-dot">•</span> {{ featured_movie.release_year }} <span class="feature-dot">•</span> {{ featured_movie.duration }} min</p>
+          <a href="{% url 'list_movie' %}" class="feature-link">Browse movies <span aria-hidden="true">→</span></a>
+        {% else %}
+          <h3>Your next big premiere starts here</h3>
+          <p>Add a movie to start building your cinema catalogue.</p>
+          <a href="{% url 'add_movie' %}" class="feature-link">Add your first movie <span aria-hidden="true">→</span></a>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="seat-card">
+      <div class="section-heading">
+        <div><p class="dashboard-kicker">CAPACITY</p><h3>Seat overview</h3></div>
+        <a href="{% url 'list_seat' %}" aria-label="Manage seats">↗</a>
+      </div>
+      <div class="seat-overview">
+        <div class="seat-ring" style="--seat-fill: {{ seat_fill_percent }}%"><div><strong>{{ seat_fill_percent }}%</strong><span>booked</span></div></div>
+        <div class="seat-legend">
+          <p><i class="legend-dot booked"></i>Booked <strong>{{ booked_seats }}</strong></p>
+          <p><i class="legend-dot available"></i>Total seats <strong>{{ total_seats }}</strong></p>
+        </div>
+      </div>
+      <p class="card-footnote">Booked seats and screen capacity across all showtimes. With no showtimes, total seats shows configured hall capacity.</p>
+    </section>
+  </div>
+
+  <section class="poster-section content-card">
+    <div class="section-heading">
+      <div><p class="dashboard-kicker">ON THE BIG SCREEN</p><h3>Movie poster collection</h3></div>
+      <a href="{% url 'list_movie' %}" class="subtle-link">Browse catalogue <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="poster-grid">
+      <article class="poster-item">
+        <img src="{% static 'assets/img/3.jpg' %}" alt="Avengers: Endgame poster">
+        <span>Avengers: Endgame</span>
+      </article>
+      <article class="poster-item">
+        <img src="{% static 'assets/img/joker.jpg' %}" alt="Joker poster">
+        <span>Joker</span>
+      </article>
+      <article class="poster-item">
+        <img src="{% static 'assets/img/missionm.jpg' %}" alt="Mission Mangal poster">
+        <span>Mission Mangal</span>
+      </article>
+      <article class="poster-item">
+        <img src="{% static 'assets/img/-62170003800_batla-house-first-look-poster.jpg' %}" alt="Batla House poster">
+        <span>Batla House</span>
+      </article>
+    </div>
+  </section>
+
+  <div class="dashboard-lower-grid">
+    <section class="content-card">
+      <div class="section-heading">
+        <div><p class="dashboard-kicker">COMING UP</p><h3>Next showtimes</h3></div>
+        <a href="{% url 'list_showtime' %}" class="subtle-link">All showtimes <span aria-hidden="true">→</span></a>
+      </div>
+      {% if upcoming_shows %}
+        <div class="showtime-list">
+          {% for show in upcoming_shows %}
+            <article class="showtime-row">
+              <div class="showtime-date"><strong>{{ show.show_date|date:"d" }}</strong><span>{{ show.show_date|date:"M" }}</span></div>
+              <div class="showtime-details"><strong>{{ show.movie.title }}</strong><span>{{ show.hall.theater.name }} · {{ show.hall.name }}</span></div>
+              <time>{{ show.start_time|time:"g:i A" }}</time>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state"><span class="material-symbols-rounded">event_busy</span><p>No upcoming showtimes yet.</p><a href="{% url 'add_showtime' %}">Schedule a show</a></div>
+      {% endif %}
+    </section>
+
+    <section class="content-card recent-card">
+      <div class="section-heading">
+        <div><p class="dashboard-kicker">LATEST ACTIVITY</p><h3>Recent bookings</h3></div>
+        <a href="{% url 'list_booking' %}" class="subtle-link">View all <span aria-hidden="true">→</span></a>
+      </div>
+      {% if recent_bookings %}
+        <div class="booking-list">
+          {% for booking in recent_bookings %}
+            <article class="booking-row">
+              <div class="client-avatar">{{ booking.client.first_name|first|upper }}</div>
+              <div class="booking-person"><strong>{{ booking.client.first_name }} {{ booking.client.last_name }}</strong><span>{{ booking.showtime.movie.title }}</span></div>
+              <span class="status-pill status-{{ booking.payment_status|lower }}">{{ booking.payment_status }}</span>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state"><span class="material-symbols-rounded">confirmation_number</span><p>Bookings will appear here.</p><a href="{% url 'add_booking' %}">Create a booking</a></div>
+      {% endif %}
+    </section>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="workflow-page">
+  <header class="workflow-heading">
+    <div>
+      <p class="dashboard-kicker">BOOKING MANAGEMENT</p>
+      <h2>{{ title }}</h2>
+      <p class="workflow-subtitle">Complete the fields below to create a booking.</p>
+    </div>
+    <a class="workflow-back-link" href="{% url 'list_booking' %}">
+      <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+      Back to bookings
+    </a>
+  </header>
+
+  <div class="workflow-card">
+    <form class="workflow-form" method="post">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="form-error-summary" role="alert">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <div class="booking-form-grid">
+        <div class="booking-field">
+          <label for="{{ form.client.id_for_label }}">Client</label>
+          <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">person</span>{{ form.client }}</div>
+          {% for error in form.client.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+        </div>
+        <div class="booking-field">
+          <label for="{{ form.showtime.id_for_label }}">Showtime</label>
+          <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">movie</span>{{ form.showtime }}</div>
+          {% for error in form.showtime.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+        </div>
+        <div class="booking-field">
+          <label for="{{ form.seat.id_for_label }}">Seat</label>
+          <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">event_seat</span>{{ form.seat }}</div>
+          {% for error in form.seat.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+        </div>
+        <div class="booking-field">
+          <label for="{{ form.amount.id_for_label }}">Amount</label>
+          <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">payments</span>{{ form.amount }}</div>
+          {% for error in form.amount.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+        </div>
+        <div class="booking-field">
+          <label for="{{ form.payment_status.id_for_label }}">Payment status</label>
+          <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">task_alt</span>{{ form.payment_status }}</div>
+          {% for error in form.payment_status.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+        </div>
+        <div class="booking-field">
+          <label for="{{ form.payment_method.id_for_label }}">Payment method</label>
+          <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">credit_card</span>{{ form.payment_method }}</div>
+          {% for error in form.payment_method.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+        </div>
+      </div>
+
+      <div class="workflow-actions">
+        <button class="workflow-button" type="submit">
+          <span class="material-symbols-rounded" aria-hidden="true">save</span>
+          Save booking
+        </button>
+        <a class="workflow-cancel-link" href="{% url 'list_booking' %}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

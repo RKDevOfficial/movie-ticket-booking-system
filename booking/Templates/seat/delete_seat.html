@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="workflow-page">
+  <header class="workflow-heading">
+    <div>
+      <p class="dashboard-kicker">CINEMA OPERATIONS</p>
+      <h2>Delete seat</h2>
+      <p class="workflow-subtitle">Remove a seat from its cinema hall.</p>
+    </div>
+    <a class="workflow-back-link" href="{% url 'list_seat' %}">
+      <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+      Back to seats
+    </a>
+  </header>
+
+  <div class="workflow-card delete-card">
+    <div class="delete-card-heading">
+      <span class="delete-icon material-symbols-rounded" aria-hidden="true">warning</span>
+      <div>
+        <h3>Delete seat {{ seat.seat_number }}?</h3>
+        <p>This seat belongs to {{ seat.hall.name }}. Deleting it will also delete any bookings linked to this seat.</p>
+      </div>
+    </div>
+    <div class="workflow-actions">
+      <form method="post">
+        {% csrf_token %}
+        <button class="workflow-button danger-button" type="submit">
+          <span class="material-symbols-rounded" aria-hidden="true">delete</span>
+          Delete seat
+        </button>
+      </form>
+      <a class="workflow-cancel-link" href="{% url 'list_seat' %}">Cancel</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

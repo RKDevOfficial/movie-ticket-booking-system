@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="workflow-page movie-list-page">
+  <header class="workflow-heading">
+    <div>
+      <p class="dashboard-kicker">CATALOG MANAGEMENT</p>
+      <h2>Movies</h2>
+      <p class="workflow-subtitle">Manage movie titles, categories, ratings, and release details.</p>
+    </div>
+    <a class="workflow-button" href="{% url 'list_movie' %}?movie_form=add&amp;q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}">
+      <span class="material-symbols-rounded" aria-hidden="true">add</span>
+      Add movie
+    </a>
+  </header>
+
+  <div class="booking-summary-grid movie-summary-grid">
+    <article class="booking-summary-card">
+      <span class="summary-symbol blue-symbol material-symbols-rounded" aria-hidden="true">movie</span>
+      <span class="summary-label">Movies in catalog</span>
+      <strong>{{ movie_count }}</strong>
+    </article>
+    <article class="booking-summary-card">
+      <span class="summary-symbol orange-symbol material-symbols-rounded" aria-hidden="true">category</span>
+      <span class="summary-label">Categories</span>
+      <strong>{{ category_count }}</strong>
+    </article>
+  </div>
+
+  <div class="workflow-card table-card">
+    <form class="booking-search" method="get" action="{% url 'list_movie' %}" role="search">
+      <label class="booking-search-control">
+        <span class="material-symbols-rounded" aria-hidden="true">search</span>
+        <span class="visually-hidden">Search movies</span>
+        <input type="search" name="q" value="{{ search_query }}" placeholder="Search title, category, language, or rating...">
+      </label>
+      <button class="booking-search-button" type="submit">Search</button>
+      <label class="booking-limit-control">Rows
+        <select name="limit" aria-label="Rows per page" onchange="this.form.submit()">
+          <option value="10" {% if page_limit == '10' %}selected{% endif %}>10</option>
+          <option value="25" {% if page_limit == '25' %}selected{% endif %}>25</option>
+          <option value="50" {% if page_limit == '50' %}selected{% endif %}>50</option>
+        </select>
+      </label>
+      {% if search_query %}<a class="booking-search-clear" href="{% url 'list_movie' %}?limit={{ page_limit }}">Clear</a>{% endif %}
+    </form>
+    <div class="workflow-table-wrap">
+      <table class="workflow-table movie-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Movie</th>
+            <th>Category</th>
+            <th>Duration</th>
+            <th>Rating</th>
+            <th>Language</th>
+            <th>Release year</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in movie %}
+            <tr>
+              <td><span class="booking-reference">#{{ m.id }}</span></td>
+              <td>
+                <div class="table-primary-cell">
+                  <span class="movie-table-icon material-symbols-rounded" aria-hidden="true">movie</span>
+                  <span><strong>{{ m.title }}</strong><small>Movie title</small></span>
+                </div>
+              </td>
+              <td><span class="movie-category-chip">{{ m.category.category_name }}</span></td>
+              <td>{{ m.duration }} min</td>
+              <td><span class="status-pill movie-rating-pill">{{ m.rating }}</span></td>
+              <td>{{ m.language }}</td>
+              <td>{{ m.release_year }}</td>
+              <td class="workflow-row-actions">
+                <a class="row-action" href="{% url 'list_movie' %}?movie_form=edit&amp;movie_id={{ m.pk }}&amp;q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}" aria-label="Edit {{ m.title }}" title="Edit movie">
+                  <span class="material-symbols-rounded" aria-hidden="true">edit</span>
+                </a>
+                <a class="row-action danger-link" href="{% url 'delete_movie' m.pk %}" aria-label="Delete {{ m.title }}" title="Delete movie">
+                  <span class="material-symbols-rounded" aria-hidden="true">delete</span>
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td class="workflow-empty" colspan="8">
+              <span class="material-symbols-rounded" aria-hidden="true">movie</span>
+              <strong>{% if search_query %}No matching movies{% else %}No movies yet{% endif %}</strong>
+              <span>{% if search_query %}Try a different title or movie detail.{% else %}Add a movie to start building the catalog.{% endif %}</span>
+            </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <footer class="booking-pagination">
+      <p>Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} movies</p>
+      {% if page_obj.paginator.count %}
+        <nav class="booking-pagination-controls" aria-label="Movie list pages">
+          {% if page_obj.has_previous %}
+            <a class="booking-page-arrow" href="?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.previous_page_number }}" aria-label="Previous page" title="Previous page">&lt;</a>
+          {% else %}
+            <span class="booking-page-arrow is-disabled" aria-disabled="true" aria-label="No previous page">&lt;</span>
+          {% endif %}
+          <span class="booking-page-count">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+          {% if page_obj.has_next %}
+            <a class="booking-page-arrow" href="?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.next_page_number }}" aria-label="Next page" title="Next page">&gt;</a>
+          {% else %}
+            <span class="booking-page-arrow is-disabled" aria-disabled="true" aria-label="No next page">&gt;</span>
+          {% endif %}
+        </nav>
+      {% endif %}
+    </footer>
+  </div>
+</section>
+{% if movie_form %}
+  <div class="booking-modal-layer">
+    <a class="booking-modal-backdrop" href="{% url 'list_movie' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}" aria-label="Close movie form"></a>
+    <section class="booking-modal" role="dialog" aria-modal="true" aria-labelledby="movie-modal-title">
+      <header class="booking-modal-header">
+        <div>
+          <p class="dashboard-kicker">CATALOG MANAGEMENT</p>
+          <h2 id="movie-modal-title">{{ movie_form_title }}</h2>
+          <p class="workflow-subtitle">Enter the movie information below.</p>
+        </div>
+        <a class="booking-modal-close" href="{% url 'list_movie' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}" aria-label="Close form">
+          <span class="material-symbols-rounded" aria-hidden="true">close</span>
+        </a>
+      </header>
+      {% include 'movie/_movie_form_fields.html' %}
+    </section>
+  </div>
+{% endif %}
+{% endblock %}

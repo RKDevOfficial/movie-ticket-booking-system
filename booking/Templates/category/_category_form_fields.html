@@ -1,0 +1,20 @@
+<form class="workflow-form booking-modal-form" method="post">
+  {% csrf_token %}
+  {% if category_form.non_field_errors %}
+    <div class="form-error-summary" role="alert">{{ category_form.non_field_errors }}</div>
+  {% endif %}
+  <div class="booking-form-grid">
+    <div class="booking-field booking-field-wide">
+      <label for="{{ category_form.category_name.id_for_label }}">Category name</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">category</span>{{ category_form.category_name }}</div>
+      {% for error in category_form.category_name.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+  </div>
+  <div class="workflow-actions">
+    <button class="workflow-button" type="submit">
+      <span class="material-symbols-rounded" aria-hidden="true">save</span>
+      Save category
+    </button>
+    <a class="workflow-cancel-link" href="{% url 'list_category' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}">Cancel</a>
+  </div>
+</form>

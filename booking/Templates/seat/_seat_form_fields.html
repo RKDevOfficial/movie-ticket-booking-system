@@ -1,0 +1,25 @@
+<form class="workflow-form booking-modal-form" method="post">
+  {% csrf_token %}
+  {% if seat_form.non_field_errors %}
+    <div class="form-error-summary" role="alert">{{ seat_form.non_field_errors }}</div>
+  {% endif %}
+  <div class="booking-form-grid">
+    <div class="booking-field">
+      <label for="{{ seat_form.seat_number.id_for_label }}">Seat number</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">event_seat</span>{{ seat_form.seat_number }}</div>
+      {% for error in seat_form.seat_number.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="booking-field">
+      <label for="{{ seat_form.hall.id_for_label }}">Cinema hall</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">meeting_room</span>{{ seat_form.hall }}</div>
+      {% for error in seat_form.hall.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+  </div>
+  <div class="workflow-actions">
+    <button class="workflow-button" type="submit">
+      <span class="material-symbols-rounded" aria-hidden="true">save</span>
+      Save seat
+    </button>
+    <a class="workflow-cancel-link" href="{% url 'list_seat' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}">Cancel</a>
+  </div>
+</form>

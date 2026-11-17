@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="workflow-page">
+  <header class="workflow-heading">
+    <div>
+      <p class="dashboard-kicker">BOOKING MANAGEMENT</p>
+      <h2>Delete booking</h2>
+      <p class="workflow-subtitle">Review the reservation before confirming.</p>
+    </div>
+    <a class="workflow-back-link" href="{% url 'list_booking' %}">
+      <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+      Back to bookings
+    </a>
+  </header>
+
+  <div class="workflow-card delete-card">
+    <div class="delete-card-heading">
+      <span class="material-symbols-rounded delete-icon" aria-hidden="true">warning</span>
+      <div>
+        <h3>Delete this booking?</h3>
+        <p>This booking will be permanently removed from your records.</p>
+      </div>
+    </div>
+    <div class="delete-booking-summary">
+      <span>Booking <strong>#{{ booking.id }}</strong></span>
+      <span>Client <strong>{{ booking.client.first_name }} {{ booking.client.last_name }}</strong></span>
+      <span>Movie <strong>{{ booking.showtime.movie.title }}</strong></span>
+      <span>Seat <strong>{{ booking.seat.seat_number }}</strong></span>
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      <div class="workflow-actions">
+        <button class="workflow-button danger-button" type="submit">
+          <span class="material-symbols-rounded" aria-hidden="true">delete</span>
+          Delete booking
+        </button>
+        <a class="workflow-cancel-link" href="{% url 'list_booking' %}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

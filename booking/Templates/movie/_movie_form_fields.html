@@ -1,0 +1,45 @@
+<form class="workflow-form booking-modal-form" method="post">
+  {% csrf_token %}
+  {% if movie_form.non_field_errors %}
+    <div class="form-error-summary" role="alert">{{ movie_form.non_field_errors }}</div>
+  {% endif %}
+  <div class="booking-form-grid">
+    <div class="booking-field booking-field-wide">
+      <label for="{{ movie_form.title.id_for_label }}">Title</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">movie</span>{{ movie_form.title }}</div>
+      {% for error in movie_form.title.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="booking-field">
+      <label for="{{ movie_form.category.id_for_label }}">Category</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">category</span>{{ movie_form.category }}</div>
+      {% for error in movie_form.category.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="booking-field">
+      <label for="{{ movie_form.duration.id_for_label }}">Duration (minutes)</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">schedule</span>{{ movie_form.duration }}</div>
+      {% for error in movie_form.duration.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="booking-field">
+      <label for="{{ movie_form.rating.id_for_label }}">Rating</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">star</span>{{ movie_form.rating }}</div>
+      {% for error in movie_form.rating.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="booking-field">
+      <label for="{{ movie_form.language.id_for_label }}">Language</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">language</span>{{ movie_form.language }}</div>
+      {% for error in movie_form.language.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="booking-field">
+      <label for="{{ movie_form.release_year.id_for_label }}">Release year</label>
+      <div class="field-control"><span class="material-symbols-rounded" aria-hidden="true">calendar_month</span>{{ movie_form.release_year }}</div>
+      {% for error in movie_form.release_year.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+    </div>
+  </div>
+  <div class="workflow-actions">
+    <button class="workflow-button" type="submit">
+      <span class="material-symbols-rounded" aria-hidden="true">save</span>
+      Save movie
+    </button>
+    <a class="workflow-cancel-link" href="{% url 'list_movie' %}?q={{ search_query|urlencode }}&amp;limit={{ page_limit }}&amp;page={{ page_obj.number }}">Cancel</a>
+  </div>
+</form>

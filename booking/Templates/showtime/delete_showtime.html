@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="workflow-page">
+  <header class="workflow-heading">
+    <div>
+      <p class="dashboard-kicker">SCHEDULE MANAGEMENT</p>
+      <h2>Delete showtime</h2>
+      <p class="workflow-subtitle">Remove a screening from the schedule.</p>
+    </div>
+    <a class="workflow-back-link" href="{% url 'list_showtime' %}">
+      <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+      Back to showtimes
+    </a>
+  </header>
+
+  <div class="workflow-card delete-card">
+    <div class="delete-card-heading">
+      <span class="delete-icon material-symbols-rounded" aria-hidden="true">warning</span>
+      <div>
+        <h3>Delete this screening?</h3>
+        <p>{{ showtime.movie.title }} at {{ showtime.hall.name }} on {{ showtime.show_date|date:"d M Y" }}, {{ showtime.start_time|time:"g:i A" }}. This action cannot be undone.</p>
+      </div>
+    </div>
+    <div class="workflow-actions">
+      <form method="post">
+        {% csrf_token %}
+        <button class="workflow-button danger-button" type="submit">
+          <span class="material-symbols-rounded" aria-hidden="true">delete</span>
+          Delete showtime
+        </button>
+      </form>
+      <a class="workflow-cancel-link" href="{% url 'list_showtime' %}">Cancel</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

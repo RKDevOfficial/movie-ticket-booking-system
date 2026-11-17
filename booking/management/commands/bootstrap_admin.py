@@ -14,13 +14,16 @@ class Command(BaseCommand):
             self.stdout.write('Initial superuser not configured; skipping.')
             return
 
+        reset_password = os.environ.get(
+            'INITIAL_SUPERUSER_RESET_PASSWORD', ''
+        ).lower() in {'1', 'true', 'yes'}
         username = os.environ.get('INITIAL_SUPERUSER_USERNAME', 'admin').strip()
         if not username:
             raise CommandError('INITIAL_SUPERUSER_USERNAME cannot be empty.')
 
         user_model = get_user_model()
         user = user_model.objects.filter(username=username).first()
-        if user and user.is_superuser:
+        if user and user.is_superuser and not reset_password:
             self.stdout.write(f'Superuser {username!r} already exists; skipping.')
             return
 
@@ -46,6 +49,5 @@ class Command(BaseCommand):
                 return
             raise
 
-        self.stdout.write(
-            self.style.SUCCESS(f'Created initial superuser {username!r}.')
-        )
+        action = 'Reset password for' if reset_password else 'Created'
+        self.stdout.write(self.style.SUCCESS(f'{action} superuser {username!r}.'))

@@ -42,6 +42,22 @@ class BootstrapAdminCommandTests(TestCase):
 
         self.assertFalse(get_user_model().objects.filter(username='admin').exists())
 
+    def test_resets_existing_admin_password_when_explicitly_enabled(self):
+        admin = get_user_model().objects.create_superuser(
+            username='admin',
+            password='old-test-password',
+        )
+
+        with patch.dict(os.environ, {
+            'INITIAL_SUPERUSER_PASSWORD': 'new-test-password',
+            'INITIAL_SUPERUSER_RESET_PASSWORD': 'true',
+        }):
+            call_command('bootstrap_admin')
+
+        admin.refresh_from_db()
+        self.assertTrue(admin.check_password('new-test-password'))
+        self.assertFalse(admin.check_password('old-test-password'))
+
 
 class AuthenticationFlowTests(TestCase):
     def setUp(self):
